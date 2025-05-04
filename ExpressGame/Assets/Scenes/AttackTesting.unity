@@ -466,7 +466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerSpeed: 10
-  jumpForce: 100
+  jumpForce: 10
   invincibilityTime: 0
   attackDelay: 0
   attackLayers:

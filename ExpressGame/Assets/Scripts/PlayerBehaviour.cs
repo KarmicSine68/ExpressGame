@@ -75,7 +75,7 @@ public class PlayerBehaviour : MonoBehaviour
         MovePlayer();
     }
 
-    public void TryAttack()
+    public void TryAttack(float damage)
     {
         Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
         //List<Collider2D> targets = new List<Collider2D>();
@@ -92,7 +92,7 @@ public class PlayerBehaviour : MonoBehaviour
             Collider2D[] targets = Physics2D.OverlapBoxAll(i.bounds.center, i.bounds.extents, 0, attackLayers);
             foreach(Collider2D j in targets)
             {
-                j.gameObject.GetComponent<EnemyBehaviour>().TakeDamage(2);
+                j.gameObject.GetComponent<EnemyBehaviour>().TakeDamage(damage);
             }
         }
     }

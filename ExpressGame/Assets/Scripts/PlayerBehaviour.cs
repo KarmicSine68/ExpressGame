@@ -62,16 +62,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             canAttack = false;
             Debug.Log("starting attack");
-            if(comboIndex == 0)
-            {
-                StartCoroutine(ComboTime(5));
-                StartCoroutine(AttackDelay(2));
-            }
-            else
-            {
-                attacking = true;
-            }
-            //ComboAttack();
+            ComboAttack();
         }
     }
 
@@ -80,21 +71,17 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     private void ComboAttack()
     {
-        StartCoroutine(AttackDelay(2));
         //tells the animator to play the appropriate animation
         switch(comboIndex)
         {
             case 0:
-                Debug.Log("basic attack 1");
-                StartCoroutine(ComboTime(5));
+                animator.SetTrigger("Combo1");
                 break;
             case 1:
-                Debug.Log("basic attack 2");
-                StartCoroutine(ComboTime(5));
+                animator.SetTrigger("Combo2");
                 break;
             case 2:
-                Debug.Log("end of combo attack");
-                comboIndex = 0;
+                animator.SetTrigger("Combo3");
                 break;
             default:
                 Debug.Log("combo index out of bounds");
@@ -102,17 +89,17 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    IEnumerator AttackDelay(float dTime)
-    {
-        float t = 0;
-        while(t < dTime)
-        {
-            yield return new WaitForSeconds(.1f);
-            t += .1f;
-        }
-        canAttack = true;
-        Debug.Log("Ready to attack");
-    }
+    //IEnumerator AttackDelay(float dTime)
+    //{
+    //    float t = 0;
+    //    while(t < dTime)
+    //    {
+    //        yield return new WaitForSeconds(.1f);
+    //        t += .1f;
+    //    }
+    //    canAttack = true;
+    //    Debug.Log("Ready to attack");
+    //}
 
     /// <summary>
     /// How much time the player has between attacks before the combo ends
@@ -144,7 +131,6 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else
         {
-            ComboAttack();
             Debug.Log("combo continued");
         }
 
@@ -152,12 +138,21 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
     /// <summary>
-    /// Used by the animator to start how much time the player has to continue the combo
+    /// Used by the animator to determine how much time the player has to continue the combo
     /// </summary>
     /// <param name="cTime"></param>
     public void StartComboTimer(float cTime)
     {
         StartCoroutine(ComboTime(cTime));
+    }
+
+    /// <summary>
+    /// Used by the animator to let the player attack again
+    /// </summary>
+    /// <param name="t"></param>
+    public void PlayerCanAttackAgain()
+    {
+        canAttack = true;
     }
 
     /// <summary>

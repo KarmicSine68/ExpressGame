@@ -78,10 +78,13 @@ public class PlayerBehaviour : MonoBehaviour
                 animator.SetTrigger("Combo1");
                 break;
             case 1:
+                attacking = true;
                 animator.SetTrigger("Combo2");
                 break;
             case 2:
+                attacking = true;
                 animator.SetTrigger("Combo3");
+                comboIndex = 0;
                 break;
             default:
                 Debug.Log("combo index out of bounds");
@@ -141,10 +144,10 @@ public class PlayerBehaviour : MonoBehaviour
     /// Used by the animator to determine how much time the player has to continue the combo
     /// </summary>
     /// <param name="cTime"></param>
-    public void StartComboTimer(float cTime)
-    {
-        StartCoroutine(ComboTime(cTime));
-    }
+    //public void StartComboTimer(float cTime)
+    //{
+    //    StartCoroutine(ComboTime(cTime));
+    //}
 
     /// <summary>
     /// Used by the animator to let the player attack again

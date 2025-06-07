@@ -28,7 +28,8 @@ public class PlayerBehaviour : MonoBehaviour
     [SerializeField] private float invincibilityTime;
     [Tooltip("Time in seconds the player must wait before they can attack again")]
     [SerializeField] private float attackDelay;
-    private bool attacking;
+    private bool attacking, canAttack;
+    private int comboIndex;
     [SerializeField] LayerMask attackLayers;
 
     /// <summary>
@@ -47,6 +48,7 @@ public class PlayerBehaviour : MonoBehaviour
         jump.started += Jump_started;
         attack.started += Attack_started;
         attacking = false;
+        canAttack = true;
     }
 
     /// <summary>
@@ -55,7 +57,99 @@ public class PlayerBehaviour : MonoBehaviour
     /// <param name="obj"></param>
     private void Attack_started(InputAction.CallbackContext obj)
     {
-        animator.SetTrigger("Attack");
+        //animator.SetTrigger("Attack");
+        if (canAttack)
+        {
+            canAttack = false;
+            Debug.Log("starting attack");
+            ComboAttack();
+        }
+    }
+
+    /// <summary>
+    /// Executes the three hit combo
+    /// </summary>
+    private void ComboAttack()
+    {
+        StartCoroutine(AttackDelay(2));
+        //tells the animator to play the appropriate animation
+        switch(comboIndex)
+        {
+            case 0:
+                Debug.Log("basic attack 1");
+                StartCoroutine(ComboTime(5));
+                break;
+            case 1:
+                Debug.Log("basic attack 2");
+                attacking = true;
+                StartCoroutine(ComboTime(5));
+                break;
+            case 2:
+                Debug.Log("end of combo attack");
+                attacking = true;
+                comboIndex = 0;
+                break;
+            default:
+                Debug.Log("combo index out of bounds");
+                break;
+        }
+    }
+
+    IEnumerator AttackDelay(float dTime)
+    {
+        float t = 0;
+        while(t < dTime)
+        {
+            yield return new WaitForSeconds(.1f);
+            t += .1f;
+        }
+        canAttack = true;
+        Debug.Log("Ready to attack");
+    }
+
+    /// <summary>
+    /// How much time the player has between attacks before the combo ends
+    /// </summary>
+    /// <returns></returns>
+    private IEnumerator ComboTime(float cTime)
+    {
+        ++comboIndex;
+        float t = 0;
+        //Temp variable used to reset the combo if they don't attack in time
+        int cIndex = 0;
+
+        while(t < cTime && !attacking)
+        {
+            if(attacking)
+            {
+                attacking = false;
+                cIndex = 1;
+                break;
+            }
+
+            yield return new WaitForSeconds(.1f);
+            t += .1f;
+        }
+
+        if(cIndex == 0)
+        {
+            Debug.Log("combo dropped");
+        }
+        else
+        {
+            Debug.Log("combo continued");
+        }
+
+        comboIndex *= cIndex;
+    }
+
+    /// <summary>
+    /// Used by the animator to start how much time the player has to continue the combo
+    /// </summary>
+    /// <param name="cTime"></param>
+    public void StartComboTimer(float cTime)
+    {
+        StartCoroutine(ComboTime(cTime));
     }
 
     /// <summary>
@@ -63,11 +157,8 @@ public class PlayerBehaviour : MonoBehaviour
     /// </summary>
     /// <param name="obj"></param>
     private void Jump_started(InputAction.CallbackContext obj)
-    {
-        if (!attacking)
-        {
-            rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        }
+    {  
+        rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
 
     private void FixedUpdate()
@@ -75,6 +166,10 @@ public class PlayerBehaviour : MonoBehaviour
         MovePlayer();
     }
 
+    /// <summary>
+    /// Function called by the animation to see if an attack connects
+    /// </summary>
+    /// <param name="damage"></param>
     public void TryAttack(float damage)
     {
         Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
@@ -103,14 +198,7 @@ public class PlayerBehaviour : MonoBehaviour
     private void MovePlayer()
     {
         float moveDir;
-        if (!attacking)
-        {
-            moveDir = move.ReadValue<float>();
-        }
-        else
-        {
-            moveDir = 0;
-        }
+        moveDir = move.ReadValue<float>();
 
         rb2D.velocity = new Vector2(moveDir * playerSpeed, rb2D.velocity.y);
     }

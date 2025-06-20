@@ -32,6 +32,10 @@ public class PlayerBehaviour : MonoBehaviour
     private int comboIndex;
     [SerializeField] LayerMask attackLayers;
 
+    //Bool used to determine if the player has attack delay after an attack
+    [Space(5)]
+    public bool HaveAttackDelay;
+
     /// <summary>
     /// Enables the player input
     /// </summary>
@@ -92,17 +96,22 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-    //IEnumerator AttackDelay(float dTime)
-    //{
-    //    float t = 0;
-    //    while(t < dTime)
-    //    {
-    //        yield return new WaitForSeconds(.1f);
-    //        t += .1f;
-    //    }
-    //    canAttack = true;
-    //    Debug.Log("Ready to attack");
-    //}
+    /// <summary>
+    /// How much time the player has to wait after attacking before they can attack again
+    /// </summary>
+    /// <param name="dTime"></param>
+    /// <returns></returns>
+    private IEnumerator AttackDelay(float dTime)
+    {
+        float t = 0;
+        while (t < dTime)
+        {
+            yield return new WaitForSeconds(.1f);
+            t += .1f;
+        }
+        canAttack = true;
+        Debug.Log("Ready to attack");
+    }
 
     /// <summary>
     /// How much time the player has between attacks before the combo ends
@@ -141,21 +150,19 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
     /// <summary>
-    /// Used by the animator to determine how much time the player has to continue the combo
-    /// </summary>
-    /// <param name="cTime"></param>
-    //public void StartComboTimer(float cTime)
-    //{
-    //    StartCoroutine(ComboTime(cTime));
-    //}
-
-    /// <summary>
     /// Used by the animator to let the player attack again
     /// </summary>
     /// <param name="t"></param>
-    public void PlayerCanAttackAgain()
+    public void PlayerCanAttackAgain(float t)
     {
-        canAttack = true;
+        if (HaveAttackDelay)
+        {
+            StartCoroutine(AttackDelay(t));
+        }
+        else
+        {
+            canAttack = true;
+        }
     }
 
     /// <summary>
@@ -209,69 +216,3 @@ public class PlayerBehaviour : MonoBehaviour
         rb2D.velocity = new Vector2(moveDir * playerSpeed, rb2D.velocity.y);
     }
 }
-
-///// <summary>
-///// Executes the three hit combo
-///// </summary>
-//private void ComboAttack()
-//{
-//    StartCoroutine(AttackDelay(2));
-//    //tells the animator to play the appropriate animation
-//    switch (comboIndex)
-//    {
-//        case 0:
-//            Debug.Log("basic attack 1");
-//            StartCoroutine(ComboTime(5));
-//            break;
-//        case 1:
-//            Debug.Log("basic attack 2");
-//            attacking = true;
-//            StartCoroutine(ComboTime(5));
-//            break;
-//        case 2:
-//            Debug.Log("end of combo attack");
-//            attacking = true;
-//            comboIndex = 0;
-//            break;
-//        default:
-//            Debug.Log("combo index out of bounds");
-//            break;
-//    }
-//}
-
-/// <summary>
-/// How much time the player has between attacks before the combo ends
-/// </summary>
-/// <returns></returns>
-//private IEnumerator ComboTime(float cTime)
-//{
-//    ++comboIndex;
-//    float t = 0;
-//    //Temp variable used to reset the combo if they don't attack in time
-//    int cIndex = 0;
-
-//    while (t < cTime)
-//    {
-//        Debug.Log("t = " + t);
-//        if (attacking)
-//        {
-//            attacking = false;
-//            cIndex = 1;
-//            break;
-//        }
-
-//        yield return new WaitForSeconds(.1f);
-//        t += .1f;
-//    }
-
-//    if (cIndex == 0)
-//    {
-//        Debug.Log("combo dropped");
-//    }
-//    else
-//    {
-//        Debug.Log("combo continued");
-//    }
-
-//    comboIndex *= cIndex;
-//}

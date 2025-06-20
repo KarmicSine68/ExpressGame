@@ -56,6 +56,7 @@ public class PlayerBehaviour : MonoBehaviour
         canAttack = true;
     }
 
+    #region Player Attack
     /// <summary>
     /// Lets the player attack
     /// </summary>
@@ -78,6 +79,9 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Executes the three hit stab combo
+    /// </summary>
     private void StabCombo()
     {
         switch(comboIndex)
@@ -234,6 +238,7 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
     }
+    #endregion
 
     /// <summary>
     /// Moves the player left and right

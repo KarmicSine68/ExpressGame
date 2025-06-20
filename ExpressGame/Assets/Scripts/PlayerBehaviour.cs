@@ -35,6 +35,7 @@ public class PlayerBehaviour : MonoBehaviour
     //Bool used to determine if the player has attack delay after an attack
     [Space(5)]
     public bool HaveAttackDelay;
+    public bool UseSlashCombo;
 
     /// <summary>
     /// Enables the player input
@@ -66,14 +67,43 @@ public class PlayerBehaviour : MonoBehaviour
         {
             canAttack = false;
             Debug.Log("starting attack");
-            ComboAttack();
+            if (UseSlashCombo)
+            {
+                SlashCombo();
+            }
+            else
+            {
+                StabCombo();
+            }
+        }
+    }
+
+    private void StabCombo()
+    {
+        switch(comboIndex)
+        {
+            case 0:
+                animator.SetTrigger("RegStab");
+                break;
+            case 1:
+                attacking = true;
+                animator.SetTrigger("RegStab");
+                break;
+            case 2:
+                attacking = true;
+                animator.SetTrigger("HeavyStab");
+                comboIndex = 0;
+                break;
+            default:
+                Debug.Log("combo index out of bounds");
+                break;
         }
     }
 
     /// <summary>
-    /// Executes the three hit combo
+    /// Executes the three hit slash combo
     /// </summary>
-    private void ComboAttack()
+    private void SlashCombo()
     {
         //tells the animator to play the appropriate animation
         switch(comboIndex)

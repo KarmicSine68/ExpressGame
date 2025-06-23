@@ -240,6 +240,7 @@ public class PlayerBehaviour : MonoBehaviour
     }
     #endregion
 
+    #region Player Movement
     /// <summary>
     /// Moves the player left and right
     /// </summary>
@@ -250,4 +251,5 @@ public class PlayerBehaviour : MonoBehaviour
 
         rb2D.velocity = new Vector2(moveDir * playerSpeed, rb2D.velocity.y);
     }
+    #endregion
 }
